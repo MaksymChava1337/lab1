@@ -28,3 +28,35 @@ const paths = {
   }
 };
 
+function clean(){
+    return del('dist');
+}
+
+function styles(){
+    return src(paths.styles.src)
+    .pipe(sass().on('error', sass.logError))
+    .pipe(cleanCSS())
+    .pipe(dest(paths.styles.dest))
+}
+
+function scripts(){
+    return src(paths.scripts.src)
+    .pipe(concat('main.js'))
+    .pipe(uglify())
+    .pipe(dest(paths.scripts.dest))
+}
+
+function images(){
+    return  src(paths.images.src)
+    .pipe(imagemin())
+    .pipe(dest(paths.images.dest))
+}
+
+function html(){
+    return src(paths.html.src)
+    .pipe(fileInclude({
+        prefix: '@@',
+        basepath: '@file'
+    }))
+    .pipe(dest(paths.html.dest))
+}
