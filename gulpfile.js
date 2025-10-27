@@ -60,3 +60,20 @@ function html(){
     }))
     .pipe(dest(paths.html.dest))
 }
+
+function watchTask(){
+    browserSync.init({
+        server:{
+            daseDir: './dist'
+        },
+        notify: false
+    });
+
+    watch(paths.styles.src, styles);
+    watch(paths.scripts.src, scripts);
+    watch(paths.images.src, images);
+    watch(paths.html.watch, html);
+}
+
+exports.build = series(clean, parallel(styles, scripts, images, html));
+exports.default = series(exports.build, parallel(watchTask));
