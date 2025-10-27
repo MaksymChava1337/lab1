@@ -7,6 +7,7 @@ const imagemin = require('gulp-imagemin');
 const del = require('del');
 const browserSync = require('browser-sync').create();
 const fileInclude = require('gulp-file-include');
+const rename = require('gulp-rename'); 
 
 const paths = {
   styles: {
@@ -58,6 +59,7 @@ function html(){
         prefix: '@@',
         basepath: '@file'
     }))
+    .pipe(rename('index.html'))
     .pipe(dest(paths.html.dest))
 }
 
