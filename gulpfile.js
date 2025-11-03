@@ -11,20 +11,20 @@ const rename = require('gulp-rename');
 
 const paths = {
   styles: {
-    src: 'src/scss/**/*.scss',
+    src: 'app/scss/**/*.scss',
     dest: 'dist/css/'
   },
   scripts: {
-    src: 'src/js/**/*.js',
+    src: 'app/js/**/*.js',
     dest: 'dist/js/'
   },
   images: {
-    src: 'src/img/*',
+    src: 'app/img/*',
     dest: 'dist/img/'
   },
   html: {
-    src: 'src/*.html',
-    watch: 'src/**/*.html', 
+    src: 'app/*.html',
+    watch: 'app/**/*.html', 
     dest: 'dist/'
   }
 };
@@ -48,7 +48,7 @@ function scripts(){
 }
 
 function images(){
-    return  src(paths.images.src)
+    return src(paths.images.src, {encoding: false})
     .pipe(imagemin())
     .pipe(dest(paths.images.dest))
 }
@@ -59,14 +59,13 @@ function html(){
         prefix: '@@',
         basepath: '@file'
     }))
-    .pipe(rename('index.html'))
     .pipe(dest(paths.html.dest))
 }
 
 function watchTask(){
     browserSync.init({
         server:{
-            daseDir: './dist'
+            baseDir: './dist' //тут була помилка, написав не baseDir, а daseDir XDXDXDXDXD
         },
         notify: false
     });
