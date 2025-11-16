@@ -1,5 +1,6 @@
 {
   "devDependencies": {
+    "@popperjs/core": "^2.11.8",
     "browser-sync": "^3.0.4",
     "del": "^5.0.0",
     "gulp": "^5.0.1",

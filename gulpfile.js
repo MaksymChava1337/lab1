@@ -26,6 +26,14 @@ const paths = {
     src: 'app/*.html',
     watch: 'app/**/*.html', 
     dest: 'dist/'
+  },
+  // Додамо шляхи до файлів Bootstrap, щоб було чисто
+  bootstrap: {
+    css: 'node_modules/bootstrap/dist/css/bootstrap.min.css',
+    js: [
+        'node_modules/@popperjs/core/dist/umd/popper.min.js',
+        'node_modules/bootstrap/dist/js/bootstrap.min.js'
+    ]
   }
 };
 
@@ -42,7 +50,7 @@ function styles(){
 
 function scripts(){
     return src(paths.scripts.src)
-    .pipe(concat('main.js'))
+    .pipe(concat('main.js')) 
     .pipe(uglify())
     .pipe(dest(paths.scripts.dest))
 }
@@ -62,19 +70,39 @@ function html(){
     .pipe(dest(paths.html.dest))
 }
 
+function copyBootstrapCSS() {
+  return src(paths.bootstrap.css)
+    .pipe(dest(paths.styles.dest)); 
+}
+
+function copyBootstrapJS() {
+  return src(paths.bootstrap.js)
+    .pipe(dest(paths.scripts.dest)); 
+}
+
+function reload(cb) {
+  browserSync.reload();
+  cb();
+}
+
 function watchTask(){
     browserSync.init({
         server:{
-            baseDir: './dist' //тут була помилка, написав не baseDir, а daseDir XDXDXDXDXD
+            baseDir: './dist' 
         },
         notify: false
     });
 
-    watch(paths.styles.src, styles);
-    watch(paths.scripts.src, scripts);
-    watch(paths.images.src, images);
-    watch(paths.html.watch, html);
+  watch(paths.styles.src, series(styles, reload));
+  watch(paths.scripts.src, series(scripts, reload));
+  watch(paths.images.src, series(images, reload));
+  watch(paths.html.watch, series(html, reload));
+  // Можна додати й watch для файлів Bootstrap, але це не обов'язково
 }
 
-exports.build = series(clean, parallel(styles, scripts, images, html));
-exports.default = series(exports.build, parallel(watchTask));
+// Створимо один таск для копіювання, так зручніше
+const copyBootstrap = parallel(copyBootstrapCSS, copyBootstrapJS);
+
+// ЗМІНЕНО: Додаємо 'copyBootstrap' до паралельної збірки
+exports.build = series(clean, parallel(styles, scripts, images, html, copyBootstrap));
+exports.default = series(exports.build, watchTask);

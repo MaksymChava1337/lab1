@@ -1,1 +1,1 @@
-console.log('Це файл 2');
+console.log('Це файл 3');
